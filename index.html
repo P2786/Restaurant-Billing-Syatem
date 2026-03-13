@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rana's Pav Bhaji Junction - POS System</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="loader">
+  <div class="loader-inner">
+    <div class="loader-ring">
+      <div class="loader-ring-inner">
+        <img src="images/logo.png" alt="Logo" class="loader-logo">
+      </div>
+    </div>
+
+    <h2 class="loader-title">Rana's Pav Bhaji Junction</h2>
+    <p class="loader-text">Preparing Fresh Orders...</p>
+
+    <div class="loader-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top-mobile">
+        <div class="brand">
+          <div class="brand-logo-wrap">
+            <img
+              id="sidebarLogo"
+              class="brand-logo-img"
+              src="images/logo.png"
+              alt="Restaurant Logo"
+            />
+          </div>
+
+          <div class="brand-text">
+            <h1>Rana's Pav Bhaji Junction</h1>
+            <p>Restaurant POS & Billing</p>
+          </div>
+        </div>
+
+        <button class="close-sidebar-btn" id="closeSidebarBtn">✕</button>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-link active" data-section="dashboardSection">Dashboard</button>
+        <button class="nav-link" data-section="ordersSection">Orders / POS</button>
+        <button class="nav-link" data-section="tablesSection">Tables</button>
+        <button class="nav-link" data-section="historySection">Bill History</button>
+        <button class="nav-link" data-section="reportsSection">Reports</button>
+        <button class="nav-link" data-section="settingsSection">Menu / Settings</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="mini-card">
+          <span class="dot online"></span>
+          <div>
+            <strong>Admin Only</strong>
+            <p>Frontend demo with localStorage</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+
+          <div class="topbar-logo-wrap">
+            <img src="images/logo.png" alt="Restaurant Logo" class="topbar-logo-img" />
+          </div>
+
+          <div>
+            <h2 id="pageTitle">Dashboard</h2>
+            <p id="liveDateTime">Loading...</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-primary" id="quickNewOrderBtn">+ Quick New Order</button>
+          <button class="btn btn-secondary" id="resetDemoBtn">Reset Demo Data</button>
+        </div>
+      </header>
+
+      <!-- Dashboard -->
+      <section id="dashboardSection" class="content-section active">
+        <div class="stats-grid" id="dashboardCards"></div>
+
+        <div class="dashboard-layout">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Recent Bills</h3>
+            </div>
+            <div id="recentBills" class="table-wrap"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Sales Summary</h3>
+            </div>
+            <div class="summary-grid" id="salesSummaryCards"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Orders -->
+      <section id="ordersSection" class="content-section">
+        <div class="pos-layout">
+          <div class="menu-area panel">
+            <div class="panel-header">
+              <h3>Menu Management</h3>
+            </div>
+
+            <div class="menu-toolbar">
+              <input
+                type="text"
+                id="menuSearch"
+                class="input"
+                placeholder="Search menu item..."
+              />
+              <div class="filter-group" id="categoryFilters"></div>
+            </div>
+
+            <div id="menuGrid" class="menu-grid"></div>
+          </div>
+
+          <div class="order-area panel">
+            <div class="panel-header">
+              <h3>Order Management</h3>
+            </div>
+
+            <div class="table-alert" id="tableFullAlert" style="display:none;"></div>
+
+            <div class="order-top-controls">
+              <div class="field">
+                <label for="orderType">Order Type</label>
+                <select id="orderType" class="input">
+                  <option value="Table">Table</option>
+                  <option value="Parcel">Parcel</option>
+                </select>
+              </div>
+
+              <div class="field" id="tableSelectWrap">
+                <label for="tableSelect">Select Table</label>
+                <select id="tableSelect" class="input"></select>
+                <small id="tableAvailabilityNote" class="help-text"></small>
+              </div>
+
+              <div class="field">
+                <label for="discountInput">Discount (₹)</label>
+                <input type="number" id="discountInput" class="input" min="0" value="0" />
+              </div>
+            </div>
+
+            <div class="active-orders-strip">
+              <div class="strip-header">
+                <h4>Running Orders</h4>
+                <button class="btn btn-primary btn-sm" id="startOrderBtn">Start New Order</button>
+              </div>
+              <div id="activeOrdersTabs" class="active-orders-tabs"></div>
+            </div>
+
+            <div class="order-items-wrap">
+              <table class="order-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="orderItemsBody">
+                  <tr>
+                    <td colspan="5" class="empty-state">Start or select an order to begin.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="order-summary">
+              <div class="summary-row">
+                <span>Subtotal</span>
+                <strong id="subtotalValue">₹0</strong>
+              </div>
+              <div class="summary-row">
+                <span>Discount</span>
+                <strong id="discountValue">₹0</strong>
+              </div>
+              <div class="summary-row total-row">
+                <span>Final Total</span>
+                <strong id="finalTotalValue">₹0</strong>
+              </div>
+            </div>
+
+            <div class="payment-controls">
+              <div class="field">
+                <label for="paymentMethod">Payment Method</label>
+                <select id="paymentMethod" class="input">
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Card">Card</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="order-buttons">
+              <button class="btn btn-secondary" id="saveOrderBtn">Save Order</button>
+              <button class="btn btn-warning" id="holdOrderBtn">Hold Order</button>
+              <button class="btn btn-secondary" id="resumeOrderBtn">Resume Order</button>
+              <button class="btn btn-danger" id="cancelOrderBtn">Cancel Order</button>
+              <button class="btn btn-success" id="completePaymentBtn">Complete Payment</button>
+              <button class="btn btn-primary" id="printBillBtn">Print Bill</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tables -->
+      <section id="tablesSection" class="content-section">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Table Management</h3>
+          </div>
+
+          <div id="tablesGrid" class="tables-grid"></div>
+
+          <div class="switch-table-panel">
+            <h4>Switch Order Between Tables</h4>
+            <div class="switch-table-controls">
+              <div class="field">
+                <label for="fromTable">From Table</label>
+                <select id="fromTable" class="input"></select>
+              </div>
+              <div class="field">
+                <label for="toTable">To Table</label>
+                <select id="toTable" class="input"></select>
+              </div>
+              <button class="btn btn-primary" id="switchTableBtn">Switch Order</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bill History -->
+      <section id="historySection" class="content-section">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Bill History</h3>
+          </div>
+
+          <div class="history-filters">
+            <input type="text" id="billSearch" class="input" placeholder="Search by bill number..." />
+            <input type="date" id="billDateFilter" class="input" />
+          </div>
+
+          <div id="billHistoryTable" class="table-wrap"></div>
+        </div>
+      </section>
+
+      <!-- Reports -->
+      <section id="reportsSection" class="content-section">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Reports</h3>
+          </div>
+
+          <div class="stats-grid" id="reportStats"></div>
+
+          <div class="reports-layout">
+            <div class="report-box">
+              <h4>Item-wise Sales</h4>
+              <div id="itemWiseSales"></div>
+            </div>
+            <div class="report-box">
+              <h4>Category-wise Sales</h4>
+              <div id="categoryWiseSales"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settingsSection" class="content-section">
+        <div class="settings-layout">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Restaurant Settings</h3>
+            </div>
+
+            <div class="settings-grid">
+              <div class="field">
+                <label for="restaurantNameInput">Restaurant Name</label>
+                <input id="restaurantNameInput" class="input" type="text" value="Rana's Pav Bhaji Junction" />
+              </div>
+
+              <div class="field">
+                <label for="logoUrlInput">Logo Image Link</label>
+                <input
+                  id="logoUrlInput"
+                  class="input"
+                  type="text"
+                  placeholder="Paste logo image URL here"
+                />
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button class="btn btn-primary" id="saveBrandBtn">Save Branding</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Add New Menu Item</h3>
+            </div>
+
+            <div class="settings-grid add-item-grid">
+              <div class="field">
+                <label for="newItemName">Item Name</label>
+                <input id="newItemName" class="input" type="text" placeholder="Enter item name" />
+              </div>
+
+              <div class="field">
+                <label for="newItemCategory">Category</label>
+                <select id="newItemCategory" class="input">
+                  <option value="Bhaji Items">Bhaji Items</option>
+                  <option value="Gotala Items">Gotala Items</option>
+                  <option value="Pulav Items">Pulav Items</option>
+                  <option value="Cold Drinks">Cold Drinks</option>
+                  <option value="Custom Items">Custom Items</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="newItemPrice">Price (₹)</label>
+                <input id="newItemPrice" class="input" type="number" min="1" placeholder="Enter price" />
+              </div>
+
+              <div class="field full-width">
+                <label for="newItemImage">Image Link</label>
+                <input
+                  id="newItemImage"
+                  class="input"
+                  type="text"
+                  placeholder="Paste item image URL here"
+                />
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button class="btn btn-success" id="addNewItemBtn">Add Item</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Custom Added Items</h3>
+          </div>
+          <div id="customItemsTable" class="table-wrap"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
